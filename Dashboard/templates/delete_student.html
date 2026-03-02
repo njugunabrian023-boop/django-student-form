@@ -1,0 +1,10 @@
+<div class="container">
+    <h2>Are you sure?</h2>
+    <p>You are about to delete <strong>{{ student.name }}</strong>. This cannot be undone.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete Student</button>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
