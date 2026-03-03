@@ -1,8 +1,9 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
+from django.contrib.auth import login,logout
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 
 from Dashboard.models import Student
 
@@ -20,6 +21,7 @@ def delete_student(request,id):
         messages.success(request,'Student deleted')
         return redirect('dashboard')
     return render(request, 'delete_student.html')
+
 def add_student(request):
     if request.method == 'POST':
         image = request.FILES.get('image')
@@ -71,3 +73,20 @@ def signup(request):
         login(request, user)
         return redirect('dashboard')
     return render(request, 'sign_up.html')
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user =authenticate (username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')
+
+        else:
+            messages.error(request,messages, 'Invalid username or password')
+            return redirect('login')
+    return render(request,'login.html')
+def logout_view(request):
+    logout(request)
+    return redirect('login')
