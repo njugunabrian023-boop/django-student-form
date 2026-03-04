@@ -22,10 +22,11 @@ from Dashboard import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('dashboard/', views.dashboard, name='dashboard'),
-    path('addstudent/',views.add_student, name='add_student'),
+    path('add_student/',views.add_student, name='add_student'),
     path('update_student/<int:id>/',views.update_student, name='update_student'),
     path('delete_student/<int:id>/',views.delete_student, name='delete_student'),
     path('',views.signup,name='signup'),
     path('login/',views.login_view,name='login'),
-    path('logout/',views.logout_view,name='logout')
+    path('logout/',views.logout_view,name='logout'),
+    path('payment/<int:id>/',views.payment,name='payment'),
 ]

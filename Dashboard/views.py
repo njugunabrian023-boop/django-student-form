@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login,logout
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from django_daraja.mpesa.core import MpesaClient
 
 from Dashboard.models import Student
 
@@ -77,16 +78,45 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+    if not username:
+        messages.error(request,'All fields are required')
+        return redirect('login')
 
-        user =authenticate (username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('dashboard')
+    user =authenticate (username=username, password=password)
+    if user is not None:
+       login(request, user)
+       return redirect('dashboard')
 
-        else:
+    else:
             messages.error(request,messages, 'Invalid username or password')
             return redirect('login')
-    return render(request,'login.html')
+            return render(request,'login.html')
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('login.html')
+       # function
+def payment(request,id):
+    student = get_object_or_404(id=id)
+    if request.method == 'POST':
+        phone = request.POST.get('phone')
+        amount = request.POST.get('amount')
+        if not phone or not amount:
+            messages.error(request,'All fields are required')
+            return render(request,
+                          'payment.html',
+                          {'student':student})
+        try:
+            client =MpesaClient()
+            response = client.stk_push(
+                phone,int(amount),'eMobilis',
+                'Payment for fee','https://example.com/callback').json()
+            payment.objects.create(user=request.user,
+                                   phone=phone,
+                                   amount=amount,
+                                   checkout_request_id=response.get('checkout_request_id',''),
+                                   status='pending')
+            messages.success(request,'STK Sent! Check your phone')
+        except Exception:
+            messages.error(request,'Payment failed')
+        return render(request,'payment.html',{'student':student})
+    return render(request,'payment.html')
