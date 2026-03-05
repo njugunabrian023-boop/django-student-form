@@ -78,25 +78,28 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-    if not username:
-        messages.error(request,'All fields are required')
-        return redirect('login')
 
-    user =authenticate (username=username, password=password)
-    if user is not None:
-       login(request, user)
-       return redirect('dashboard')
+        if not username or not  password:
+            messages.error(request,'All fields are required')
+            return redirect('login')
 
-    else:
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')
+
+        else:
             messages.error(request,messages, 'Invalid username or password')
             return redirect('login')
-            return render(request,'login.html')
+
+    return render(request,'login.html')
 def logout_view(request):
     logout(request)
     return redirect('login.html')
        # function
 def payment(request,id):
-    student = get_object_or_404(id=id)
+    student = get_object_or_404(Student,id=id)
     if request.method == 'POST':
         phone = request.POST.get('phone')
         amount = request.POST.get('amount')
@@ -118,5 +121,5 @@ def payment(request,id):
             messages.success(request,'STK Sent! Check your phone')
         except Exception:
             messages.error(request,'Payment failed')
-        return render(request,'payment.html',{'student':student})
-    return render(request,'payment.html')
+
+    return render(request,'payment.html',{'student':student})

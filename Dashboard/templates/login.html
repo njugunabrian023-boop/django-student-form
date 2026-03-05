@@ -14,7 +14,6 @@
     {% endfor %}
 {% endif %}
 <h4>Login Here</h4>
-
 <form action="" method="POST">
       {% csrf_token %}
 <input type="text" name="username" placeholder="username" class="form-control">
@@ -23,7 +22,6 @@
 <p>Don't have an account?
     <a href="{% url 'signup' %}">Register Here</a>
 </p>
-
 
 </form>
 </body>
